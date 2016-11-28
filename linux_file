@@ -1,0 +1,67 @@
+1. upgrade system:
+
+sudo apt update
+sudo apt upgrade
+
+2. Add canonical
+
+А также в вкладке Другое ПО подключите следующие параметры:
+* Партнёры Canonical
+* Партнёры Canonical (Исходный код)
+
+3. Вернуть классическое наложение полосы прокрутки 
+
+gsettings set com.canonical.desktop.interface scrollbar-mode normal
+
+4. Skype
+
+sudo apt install skype # requires Canonical
+
+sudo apt install gtk2-engines-murrine:i386 # only for x64
+
+5. Turn off commercials
+
+ gsettings set com.canonical.Unity.Lenses disabled-scopes "['more_suggestions-amazon.scope', 'more_suggestions-u1ms.scope', 'more_suggestions-populartracks.scope', 'music-musicstore.scope', 'more_suggestions-ebay.scope', 'more_suggestions-ubuntushop.scope', 'more_suggestions-skimlinks.scope']"
+
+6. Classic menu indicator
+
+sudo add-apt-repository ppa:diesch/testing
+sudo apt update
+sudo apt install classicmenu-indicator
+
+7. Установить Oracle Java 7
+
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt update
+sudo apt install oracle-java7-installer
+
+8. Install git
+
+sudo apt-get install git
+
+9. Install Vundle for VIM
+
+git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+10 thinkorswim
+
+sudo sh ./thinkorswim_installer.sh
+
+whereis thinkorswim
+
+sudo /path/to/TOS/thinkorswim
+
+11. WiFi feature // seems like its working
+sudo add-apt-repository ppa:hanipouspilot/rtlwifi
+sudo apt-get update
+sudo apt-get install rtl8192cu-dkms linux-firmware
+
+==== / to restart / ====
+sudo service network-manager restart
+
+12. ffmpeg for Ubuntu 14.04
+
+sudo apt-add-repository ppa:mc3man/trusty-media
+sudo apt-get update
+sudo apt-get install ffmpeg gstreamer0.10-ffmpeg
+
