@@ -1,133 +1,206 @@
-set nocompatible     " required
+set nocompatible " required
 
-so ~/.vim/plugins.vim
+set rtp=~/.vim,/var/lib/vim/addons,/usr/share/vim/vim81 " explicitly provide runtime path
 
-let mapleader = ','
+"=====================================================
+" Vundle settings
+"=====================================================
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
 
-set nomodeline
+Plugin 'gmarik/Vundle.vim'		" let Vundle manage Vundle, required
 
-"--------- Graphics --------"
-set nu
-set t_CO=256
-syntax on
-set ruler
-set completeopt-=preview
+
+"--- Code/project navigation ---
+Plugin 'scrooloose/nerdtree' 	    	" Project and file navigation
+" --- Languages support ---
+Plugin 'nvie/vim-flake8'
+Plugin 'mattn/emmet-vim'		" Emmet for VIM
+call vundle#end()            		" required
+
+" --- Color scheme ---
+" set t_CO=256 " color scheme support
+set background=dark
+colorscheme gruvbox
+" set termguicolors
+let g:gruvbox_contrast_dark='soft'
+syntax on " syntax highlighting
+
+set expandtab " convert tabs to spaces
+set tabstop=4 " indent using four spaces
+set smarttab " insert tabstop number of spaces on tab key press
+
+" --- Search Options ---
+set hlsearch " enable search highlighting
+set incsearch " incremental search that shows partial matches
+
+" --- User Interface Options ---
+if has("gui_running")
+    set lines=30 columns=120
+endif
+set laststatus=2 " always display status bar
+set ruler " always show cursor position
+set cursorline " highlight the line currently under cursor
+set relativenumber " show relative line number
+set nu " show number
+set colorcolumn=80 " color line at 80 line
+set title " set window's title as a current file
+set spelllang=en
+set spell
 set backspace=indent,eol,start
 
-set ls=2
-set incsearch
-set hlsearch
+set guioptions-=m " hide menu
+set guioptions-=T " hide toolbar
+set guioptions-=r " hide right scrollbar
+set guioptions-=l " hide left scrollbar
+set guioptions-=L " hide scrollbar
+set guioptions-=R " hide scrollbar
+set guioptions-=e " hide gui tabs
 
-colorscheme gruvbox
+" --- Turn off backups and swaps
 
-if has("gui_running")
-    set lines=40 columns=150
-endif
+set nobackup
+set nowritebackup
+set noswapfile
 
-" прячем панельки
-"set guioptions-=m   " меню
-set guioptions-=T    " тулбар
-set guioptions-=r    " скроллбары
-set guioptions-=l    " скроллбары
-set guioptions-=L    " скроллбары
-set guioptions-=R    " скроллбары
-set guioptions-=e    " gui tabs
-
-
-" отключаем бэкапы и своп-файлы
-set nobackup 	     " no backup files
-set nowritebackup    " only in case you don't want a backup file while editing
-set noswapfile 	     " no swap files
-
-" отключаем пищалку и мигание
-set visualbell t_vb= 
-set novisualbell     
-
-"  при переходе за границу в 80 символов в Ruby/Python/js/C/C++ подсвечиваем на темном фоне текст
-augroup vimrc_autocmds
-    autocmd!
-    autocmd FileType ruby,python,javascript,c,cpp highlight Excess ctermbg=DarkGrey guibg=Black
-    autocmd FileType ruby,python,javascript,c,cpp match Excess /\%80v.*/
-    autocmd FileType ruby,python,javascript,c,cpp set nowrap
-augroup END
-
+" --- Turn off bells and blinks
+set visualbell t_vb=
+set novisualbell
 
 
 "=====================================================
 " Languages support
 "=====================================================
 " --- Python ---
-autocmd FileType python set completeopt-=preview " раскомментируйте, в случае, если не надо, чтобы jedi-vim показывал документацию по методу/классу
-autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=8
-\ formatoptions+=croq softtabstop=4 smartindent
-\ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-autocmd FileType pyrex setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+augroup python
+        autocmd FileType python set completeopt-=preview " раскомментируйте, в случае, если не надо, чтобы jedi-vim показывал документацию по методу/классу
+        autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=8
+        \ formatoptions+=croq softtabstop=4 smartindent
+        \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+        autocmd FileType pyrex setlocal expandtab shiftwidth=4 tabstop=8 softtabstop=4 smartindent cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+augroup END
 
 " --- JavaScript ---
-let javascript_enable_domhtmlcss=1
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd BufNewFile,BufRead *.json setlocal ft=javascript
-
-" --- HTML ---
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+augroup javascript
+        let javascript_enable_domhtmlcss=1
+        autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+        autocmd BufNewFile,BufRead *.json setlocal ft=javascript
+augroup END
 
 " --- template language support (SGML / XML too) ---
-autocmd FileType html,xhtml,xml,htmldjango,htmljinja,eruby,mako setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
-autocmd bufnewfile,bufread *.rhtml setlocal ft=eruby
-autocmd BufNewFile,BufRead *.mako setlocal ft=mako
-autocmd BufNewFile,BufRead *.tmpl setlocal ft=htmljinja
-autocmd BufNewFile,BufRead *.py_tmpl setlocal ft=python
-let html_no_rendering=1
-let g:closetag_default_xml=1
-let g:sparkupNextMapping='<c-l>'
-autocmd FileType html,htmldjango,htmljinja,eruby,mako let b:closetag_html_style=1
-"autocmd FileType html,xhtml,xml,htmldjango,htmljinja,eruby,mako source ~/.vim/scripts/closetag.vim
+augroup templates
+        autocmd FileType html,xhtml,xml,htmldjango,htmljinja setlocal expandtab shiftwidth=2 tabstop=2 softtabstop=2
+        autocmd BufNewFile,BufRead *.tmpl setlocal ft=htmljinja
+        autocmd BufNewFile,BufRead *.py_tmpl setlocal ft=pythonlet html_no_rendering=1
+        let g:closetag_default_xml=1
+        let g:sparkupNextMapping='<c-l>'
+        autocmd FileType html,htmldjango,htmljinja let b:closetag_html_style=1
+        " autocmd FileType html,xhtml,xml,htmldjango,htmljinja source ~/.vim/scripts/closetag.vim
+augroup END
 
 " --- CSS ---
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType css setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+augroup css
+        autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+        autocmd FileType css setlocal expandtab shiftwidth=4 tabstop=4 softtabstop=4
+augroup END
 
-
-
-"--------- Splits --------"
+" --- Splits ---
 set splitbelow
 set splitright
 
-"split navigations
-map <c-J> <C-W><C-J>
-map <c-K> <C-W><C-K>
-map <c-L> <C-W><C-L>
-map <c-H> <C-W><C-H>
+" --- Mappings ---
+
+" leader character
+let mapleader = ","
+
+" Don't use arrows
+nnoremap <down> <nop>
+nnoremap <up> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+
+inoremap <down> <nop>
+inoremap <up> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+
+" Split navigations
+nnoremap <c-J> <C-W><C-J>
+nnoremap <c-K> <C-W><C-K>
+nnoremap <c-L> <C-W><C-L>
+nnoremap <c-H> <C-W><C-H>
+
+" New tab
+nnoremap <leader>t :tabnew<CR>
+
+" Save
+nnoremap <leader>s :w<CR>
+
+" Unhighlight
+nnoremap <leader><space> :nohlsearch<CR>
+
+" Copy paste
+noremap <leader>y "+y
+noremap <leader>p "+p
+
+" Comment / uncomment
+augroup commenting
+        autocmd FileType c,cpp     let b:comment_leader = '// '
+        autocmd FileType sh,python let b:comment_leader = '# '
+        autocmd FileType vim       let b:comment_leader = '" '
+        noremap <silent> <Leader>cc :<C-B>silent <C-E>s/^\(\s*\)/\1<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
+        noremap <silent> <Leader>cu :<C-B>silent <C-E>s/^\(\s*\)\V<C-R>=escape(b:comment_leader,'\/')<CR>/\1/e<CR>:nohlsearch<CR>
+augroup END
+
+" Tabs navigation
+noremap <leader>1 1gt<CR>
+noremap <leader>2 2gt<CR>
+noremap <leader>3 3gt<CR>
+noremap <leader>4 4gt<CR>
+noremap <leader>5 5gt<CR>
+noremap <leader>6 6gt<CR>
+noremap <leader>7 7gt<CR>
+noremap <leader>8 8gt<CR>
+noremap <leader>9 9gt<CR>
 
 
-"--------- Mappings --------"
-" Сохранение
-map <C-s> :w<CR> " CTRL+S - сохранить файл
-
-" Новый таб
-map <C-t> :tabnew<CR>
-
-map <Leader><space> :nohlsearch<cr>
+" Flake 8 autocheck
+autocmd BufWritePost *.py call flake8#Flake8()
 
 
-"--------- Flake 8 settings --------"
-autocmd BufWritePost *.py call Flake8()  " check for errors on file close
-let g:flake8_max_markers=50  " (default)
-
-
-
-"--------- CtrlP settings --------"
-"let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
-"if executable('ag')
-"  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-"endif
-
-" NerdTree настройки
-" показать NERDTree на F3
+" NerdTree settings
+" show NERDTree on F3
 map <F3> :NERDTreeToggle<CR>
-"игноррируемые файлы с расширениями
-let NERDTreeIgnore=['\~$', '\.pyc$', '\.pyo$', '\.class$', 'pip-log\.txt$', '\.o$']
+" open NERDTree for current dir
+map <leader>f :NERDTreeFind<CR>
+" file types to ignore
+let NERDTreeIgnore=['\~$', '\.pyc$', '\.pyo$', '\.class$', 'pip-log\.txt$', '\.o$']  
 
-" Gruvbox settings
-set background=dark
-let g:gruvbox_contrast_dark='soft'
+" Auto change the directory to the current file I'm working on
+autocmd BufEnter * lcd %:p:h 
+
+" Session saving
+" Automatically save / rewrite the session when leaving Vim
+augroup leave
+        autocmd VimLeave * mksession! ~/.vim/session.vim
+augroup END
+
+" use ++nested to allow automatic file type detection and such
+autocmd VimEnter * ++nested call <SID>load_session()
+
+function! s:load_session()
+    " save curdir and arglist for later
+    let l:cwd = getcwd()
+    let l:args = argv()
+    " source session
+    silent source ~/.vim/session.vim
+    "restore curdir (otherwise relative paths may change)
+    call chdir(l:cwd)
+    " open all args
+    for l:file in l:args
+        execute 'tabnew' l:file
+    endfor
+    " add args to our arglist just in case
+    " execute 'argadd' join(l:args)
+endfunction
