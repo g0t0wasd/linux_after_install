@@ -1,6 +1,6 @@
 set nocompatible " required
 
-set rtp=~/.vim,/var/lib/vim/addons,/usr/share/vim/vim81 " explicitly provide runtime path
+" set rtp=~/.vim,/var/lib/vim/addons,/usr/share/vim/vim81 " explicitly provide runtime path
 
 "=====================================================
 " Vundle settings
@@ -187,7 +187,7 @@ augroup leave
 augroup END
 
 " use ++nested to allow automatic file type detection and such
-autocmd VimEnter * ++nested call <SID>load_session()
+autocmd VimEnter * call <SID>load_session()
 
 function! s:load_session()
     " save curdir and arglist for later
@@ -196,7 +196,8 @@ function! s:load_session()
     " source session
     silent source ~/.vim/session.vim
     "restore curdir (otherwise relative paths may change)
-    call chdir(l:cwd)
+    " call chdir(l:cwd)
+    execute 'cd' fnameescape(l:cwd)
     " open all args
     for l:file in l:args
         execute 'tabnew' l:file
