@@ -1,5 +1,4 @@
 set nocompatible " required
-
 " set rtp=~/.vim,/var/lib/vim/addons,/usr/share/vim/vim81 " explicitly provide runtime path
 
 "=====================================================
@@ -21,6 +20,8 @@ call vundle#end()            		" required
 
 " --- Color scheme ---
 " set t_CO=256 " color scheme support
+
+
 set background=dark
 colorscheme gruvbox
 " set termguicolors
@@ -57,6 +58,7 @@ set guioptions-=l " hide left scrollbar
 set guioptions-=L " hide scrollbar
 set guioptions-=R " hide scrollbar
 set guioptions-=e " hide gui tabs
+set noshowmode    " hide default mode indicator (--INSERT--, --VISUAL--)
 
 " --- Turn off backups and swaps
 
@@ -180,6 +182,8 @@ let NERDTreeIgnore=['\~$', '\.pyc$', '\.pyo$', '\.class$', 'pip-log\.txt$', '\.o
 " Auto change the directory to the current file I'm working on
 autocmd BufEnter * lcd %:p:h 
 
+
+
 " Session saving
 " Automatically save / rewrite the session when leaving Vim
 augroup leave
@@ -205,3 +209,45 @@ function! s:load_session()
     " add args to our arglist just in case
     " execute 'argadd' join(l:args)
 endfunction
+
+" Statusline
+function! GitBranch()
+  return system("git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -d '\n'")
+endfunction
+
+function! StatuslineGit()
+  let l:branchname = GitBranch()
+  let b:gitstatus = strlen(l:branchname) > 0?'  '.l:branchname.' ':''
+endfunction
+
+autocmd VimEnter,BufEnter,FileType * call StatuslineGit() "sets branch name on vim start, new buffer open and for quickfix window
+
+" Automatically change the statusline color depending on mode
+
+augroup coloring
+    autocmd VimEnter * hi NormalColor guifg=Black guibg=Green ctermbg=46 ctermfg=0
+    autocmd VimEnter * hi InsertColor guifg=Black guibg=Cyan ctermbg=51 ctermfg=0
+    autocmd VimEnter * hi ReplaceColor guifg=Black guibg=maroon1 ctermbg=165 ctermfg=0
+    autocmd VimEnter * hi VisualColor guifg=Black guibg=Orange ctermbg=202 ctermfg=0
+augroup END
+
+let g:modeMap={
+    \ "\<C-V>" : 'cv'
+    \}
+set laststatus=2
+set statusline=
+set statusline+=%#NormalColor#%{(mode()=='n')?'\ \ NORMAL\ ':''}
+set statusline+=%#InsertColor#%{(mode()==?'i')?'\ \ INSERT\ ':''}
+set statusline+=%#ReplaceColor#%{(mode()==?'R')?'\ \ RPLACE\ ':''}
+set statusline+=%#VisualColor#%{(mode()==#'v')?'\ \ VISUAL\ ':''}
+set statusline+=%#VisualColor#%{(mode()==#'V')?'\ \ V-LINE\ ':''}
+set statusline+=%#VisualColor#%{(mode()=='\<C-V>')?'\ \ V-BLOCK\ ':''}
+set statusline+=%#CursorIM#     " colour
+set statusline+=%(%{b:gitstatus}%)                      " git branch
+set statusline+=%4*\ %<%F%*                             "full path
+set statusline+=%4*\%m                        " modified [+] flag
+set statusline+=%4*%=                          " right align
+set statusline+=%8*\ %y\                                 " FileType
+set statusline+=%7*\ %{(&fenc!=''?&fenc:&enc)}\[%{&ff}] " Encoding & Fileformat
+set statusline+=%#Cursor#       " colour
+set statusline+=\ %l:\%c\ %L\            " Rownumber: colnumber total rows
