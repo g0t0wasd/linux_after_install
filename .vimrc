@@ -191,7 +191,7 @@ augroup leave
 augroup END
 
 " use ++nested to allow automatic file type detection and such
-autocmd VimEnter * call <SID>load_session()
+autocmd VimEnter * nested call <SID>load_session()
 
 function! s:load_session()
     " save curdir and arglist for later
@@ -224,12 +224,19 @@ autocmd VimEnter,BufEnter,FileType * call StatuslineGit() "sets branch name on v
 
 " Automatically change the statusline color depending on mode
 
-augroup coloring
-    autocmd VimEnter * hi NormalColor guifg=Black guibg=Green ctermbg=46 ctermfg=0
-    autocmd VimEnter * hi InsertColor guifg=Black guibg=Cyan ctermbg=51 ctermfg=0
-    autocmd VimEnter * hi ReplaceColor guifg=Black guibg=maroon1 ctermbg=165 ctermfg=0
-    autocmd VimEnter * hi VisualColor guifg=Black guibg=Orange ctermbg=202 ctermfg=0
-augroup END
+" augroup coloring
+    " autocmd VimEnter * hi NormalColor guifg=Black guibg=Green ctermbg=46 ctermfg=0
+    " autocmd VimEnter * hi InsertColor guifg=Black guibg=Cyan ctermbg=51 ctermfg=0
+    " autocmd VimEnter * hi ReplaceColor guifg=Black guibg=maroon1 ctermbg=165 ctermfg=0
+    " autocmd VimEnter * hi VisualColor guifg=Black guibg=Orange ctermbg=202 ctermfg=0
+" augroup END
+
+hi NormalColor guifg=Black guibg=Green ctermbg=46 ctermfg=0
+hi InsertColor guifg=Black guibg=Cyan ctermbg=51 ctermfg=0
+hi ReplaceColor guifg=Black guibg=maroon1 ctermbg=165 ctermfg=0
+hi VisualColor guifg=Black guibg=Orange ctermbg=202 ctermfg=0
+
+set ssop-=options
 
 let g:modeMap={
     \ "\<C-V>" : 'cv'
