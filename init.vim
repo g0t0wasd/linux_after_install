@@ -23,6 +23,8 @@ set guioptions-=l " hide left scrollbar
 set guioptions-=L " hide scrollbar
 set guioptions-=R " hide scrollbar
 set guioptions-=e " hide gui tabs
+set updatetime=300 " 
+set nohlsearch    " turn off search highlighting
 
 set colorcolumn=80
 highlight Colorcolumn ctermbg=0 guibg=grey
@@ -38,6 +40,9 @@ Plug 'junegunn/fzf.vim'
 Plug 'ycm-core/YouCompleteMe'
 Plug 'mbbill/undotree'
 Plug 'nvie/vim-flake8'
+Plug 'majutsushi/tagbar'
+Plug 'airblade/vim-gitgutter'
+Plug 'puremourning/vimspector'
 
 call plug#end()
 
@@ -52,25 +57,33 @@ endif
 let g:ctrlp_user_command = ['.git/', 'git --git-dif=%s/.git ls-files -oc --exclude-standard']
 
 let mapleader = " "
-let g:netrw_browse_split = 2
+
 let g:netrw_banner = 0
-let g:netrw_winsize = 25
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_winsize = 10
+" augroup ProjectDrawer
+  " autocmd!
+  " autocmd VimEnter * :Lexplore
+" augroup END
 
 " ag is fast enoug that CtrlP doesn't need to cache
 let g:ctrlp_use_caching = 0
 
-nnoremap <leader>h :wincmd h<CR>
-nnoremap <leader>j :wincmd j<CR>
-nnoremap <leader>k :wincmd k<CR>
-nnoremap <leader>l :wincmd l<CR>
 nnoremap <leader>u :UndotreeToggle<CR>
-nnoremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 30<CR>
-nnoremap <leader>ps :Rg<SPACE>
-nnoremap <silent><leader>+ :vertical resize +5<CR>
-nnoremap <silent><leader>- :vertical resize -5<CR>
+nnoremap <leader>pv :Lexplore<CR>
+nnoremap <leader>ps :RgFind '' -g '*.*'<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+nnoremap <leader>pf :Files<CR>
 
 nnoremap <silent><leader>gd :YcmCompleter GoTo<CR>
 nnoremap <silent><leader>gf :YcmCompleter FixIt<CR>
+
+" move vertically by visual line
+nnoremap j gj
+nnoremap k gk
+
+" highlight last inserted text
+nnoremap gV `[v`]
 
 " Comment / uncomment
 augroup commenting
@@ -81,6 +94,7 @@ augroup commenting
         noremap <silent> <Leader>cu :<C-B>silent <C-E>s/^\(\s*\)\V<C-R>=escape(b:comment_leader,'\/')<CR>/\1/e<CR>:nohlsearch<CR>
 augroup END
 
+
 " --- Splits ---
 set splitbelow splitright
 
@@ -88,17 +102,42 @@ set splitbelow splitright
 map <Leader>th <C-W>t<C-W>H
 map <Leader>tk <C-W>t<C-W>K
 
-" Friendly split resizing
+" Split navigations
+nnoremap <leader>j <C-W><C-J>
+nnoremap <leader>k <C-W><C-K>
+nnoremap <leader>l <C-W><C-L>
+nnoremap <leader>h <C-W><C-H>
 
+" Friendly split resizing
 noremap <silent> <C-Left> :vertical resize +3<CR>
 noremap <silent> <C-Right> :vertical resize -3<CR>
 noremap <silent> <C-Up> :resize +3<CR>
 
 noremap <silent> <C-Down> :resize -3<CR>
 
+" New tab
+nnoremap <leader>t :tabnew<CR>
+
+" Tabs navigation
+noremap <leader>1 1gt<CR>
+noremap <leader>2 2gt<CR>
+noremap <leader>3 3gt<CR>
+noremap <leader>4 4gt<CR>
+noremap <leader>5 5gt<CR>
+noremap <leader>6 6gt<CR>
+noremap <leader>7 7gt<CR>
+noremap <leader>8 8gt<CR>
+noremap <leader>9 9gt<CR>
+
+" Save
+nnoremap <leader>w :w<CR>
+
+"Tagbar
+nmap <F8> :TagbarToggle<CR>
+
 " Allow passing optional flags into the Rg command.
 "   Example: :Rg myterm -g '*.md'
-command! -bang -nargs=* Rg
+command! -bang -nargs=* RgFind
   \ call fzf#vim#grep(
   \ "rg --column --line-number --no-heading --color=always --smart-case " .
   \ <q-args>, 1, fzf#vim#with_preview(), <bang>0)
