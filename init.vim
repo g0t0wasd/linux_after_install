@@ -37,12 +37,15 @@ Plug 'tpope/vim-fugitive'
 Plug 'vim-utils/vim-man'
 Plug 'junegunn/fzf', {'do': { -> fzf#install()}}
 Plug 'junegunn/fzf.vim'
-Plug 'ycm-core/YouCompleteMe'
+" Plug 'ycm-core/YouCompleteMe'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'mbbill/undotree'
 Plug 'nvie/vim-flake8'
 Plug 'majutsushi/tagbar'
 Plug 'airblade/vim-gitgutter'
-Plug 'puremourning/vimspector'
+" Plug 'puremourning/vimspector'
+Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
+
 
 call plug#end()
 
@@ -58,6 +61,7 @@ let g:ctrlp_user_command = ['.git/', 'git --git-dif=%s/.git ls-files -oc --exclu
 
 let mapleader = " "
 
+let g:netrw_altv = 1 " open file in vert split
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
@@ -70,17 +74,63 @@ let g:netrw_winsize = 10
 " ag is fast enoug that CtrlP doesn't need to cache
 let g:ctrlp_use_caching = 0
 
+" Coc.nvim
+let g:coc_global_extensions = ['coc-emoji', 'coc-eslint', 'coc-prettier', 'coc-tsserver','coc-tslint', 'coc-tslint-plugin', 'coc-css', 'coc-json', 'coc-pyls', 'coc-yaml', 'coc-stylelint']
+" Better display for messages
+set cmdheight=2
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+" always show signcolumns
+set signcolumn=yes
+
+" Use `lp` and `ln` for navigate diagnostics
+nmap <silent> <leader>lp <Plug>(coc-diagnostic-prev)
+nmap <silent> <leader>ln <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> <leader>ld <Plug>(coc-definition)
+nmap <silent> <leader>lt <Plug>(coc-type-definition)
+nmap <silent> <leader>li <Plug>(coc-implementation)
+nmap <silent> <leader>lf <Plug>(coc-references)
+
+" Remap for rename current word
+nmap <leader>lr <Plug>(coc-rename)
+
+" Use K for show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
+
 nnoremap <leader>u :UndotreeToggle<CR>
 nnoremap <leader>pv :Lexplore<CR>
 nnoremap <leader>ps :RgFind '' -g '*.*'<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
 nnoremap <leader>pf :Files<CR>
 
-nnoremap <silent><leader>gd :YcmCompleter GoTo<CR>
-nnoremap <silent><leader>gf :YcmCompleter FixIt<CR>
-
 " move vertically by visual line
 nnoremap j gj
 nnoremap k gk
+
+" yank till the end of line
+nnoremap Y y$
 
 " highlight last inserted text
 nnoremap gV `[v`]
@@ -93,7 +143,6 @@ augroup commenting
         noremap <silent> <Leader>cc :<C-B>silent <C-E>s/^\(\s*\)/\1<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
         noremap <silent> <Leader>cu :<C-B>silent <C-E>s/^\(\s*\)\V<C-R>=escape(b:comment_leader,'\/')<CR>/\1/e<CR>:nohlsearch<CR>
 augroup END
-
 
 " --- Splits ---
 set splitbelow splitright
