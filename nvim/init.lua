@@ -1,0 +1,5 @@
+require 'settings'
+require 'plugins'
+require 'colors'
+require 'mappings'
+require 'plugin_config.toggleterm_config'
